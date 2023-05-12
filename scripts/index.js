@@ -8,29 +8,49 @@ allRides.forEach(async([id,value])=>{
     ride.id = id
     console.log(ride)
 
-    const firstPosition = ride.data[0]
-    const firstLocationData = await getLocationData(firstPosition.latitude, firstPosition.longitude)
-    
-
     const itemElement = document.createElement("li");
     itemElement.id = ride.id
+    itemElement.className = "d-flex p1 align-items-center gap-3"
+    rideListElement.appendChild(itemElement)
+
+    const firstPosition = ride.data[0]
+    const firstLocationData = await getLocationData(firstPosition.latitude, firstPosition.longitude)
+
+    const mapElement = document.createElement("div")
+    mapElement.style = "width:100px;height:100px;"
+    mapElement.classList.add("bg-primary")
+    mapElement.classList.add("rounded-4")
+
+    const dataElement = document.createElement("div")
+    dataElement.className = "flex-fill d-flex flex-column"
 
     const cityDiv = document.createElement("div")
-    itemElement.innerText = `${firstLocationData.city}-${firstLocationData.countryCode}`
+    cityDiv.innerText = `${firstLocationData.city}-${firstLocationData.countryCode}`
+    cityDiv.className = "text-danger"
 
     const maxSpeedDiv = document.createElement("div")
-    maxSpeedDiv.innerText = `Max Speed: ${getMaxSpeed(ride.data)} KM/h`
+    maxSpeedDiv.innerText = `Max-Velocidade: ${getMaxSpeed(ride.data)} KM/h`
+    maxSpeedDiv.className = ""
 
     const distanceDiv = document.createElement("div")
-    distanceDiv.innerText = `Distance ${getDistance(ride.data)}`
+    distanceDiv.innerText = `Distancia-percorrida: ${getDistance(ride.data)}`
 
+    const durationDiv = document.createElement("div")
+    durationDiv.innerText = `Duração: ${getDuration(ride)}`
 
-    itemElement.appendChild(cityDiv)
-    itemElement.appendChild(maxSpeedDiv)
-    itemElement.appendChild(distanceDiv)
-    rideListElement.appendChild(itemElement)
+    const dateDiv = document.createElement("div")
+    dateDiv.innerText = getStartDate(ride)
+    dateDiv.className = "text-secondary mt-2"
     
 
+    dataElement.appendChild(cityDiv)
+    dataElement.appendChild(maxSpeedDiv)
+    dataElement.appendChild(distanceDiv)
+    dataElement.appendChild(durationDiv)
+    dataElement.appendChild(dateDiv)
+    itemElement.appendChild(mapElement)
+    itemElement.appendChild(dataElement)
+    
 })
 
 async function getLocationData(latitude,longitude){
@@ -88,4 +108,34 @@ function getDistance(positions){
         degree * Math.PI / 180
     }
     return totalDistance.toFixed(2)
+}
+
+function getDuration(ride){
+
+    function format(number,digits){
+        return String(number.toFixed(0)).padStart(2,"0")
+    }
+
+    const interval = (ride.stopTime - ride.startTime) / 1000
+
+    const minutes = Math.trunc(interval / 60)
+    const seconds = interval % 60
+
+    return `${format(minutes,2)}:${format(seconds,2)}`
+}   
+
+function getStartDate(ride){
+
+    const d = new Date(ride.startTime)
+
+    const day = d.toLocaleString("pt-BR",{day:"numeric"})
+    const month = d.toLocaleString("pt-BR",{month:"short"})
+    const year = d.toLocaleString("pt-BR",{year:"numeric"})
+
+    const hour = d.toLocaleString("pt-BR",{hour:"2-digit"})
+    const minute = d.toLocaleString("pt-BR",{minute:"2-digit"})
+    
+    return `${hour}:${minute} - ${day} de ${month} de ${year} `
+
+
 }
