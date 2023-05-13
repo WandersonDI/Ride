@@ -15,20 +15,13 @@
 </div>
 
 <h2>Telas:</h2>
-<div>
-  <h3>Tela principal:</h3>
 
-  <img src="1.png" alt="tela-principal">
-  
-  <p>
-    Esta tela exibe todas as corridas realizadas.
-  </p>
+<div style="display:flex">
+  <img src="1.png" width="300px" height="650px">
+  <img src="3.png" width="300px" height="650px">
 </div>
 
 <div>
-  <h3>Medidor:</h3>
-  
-  <img src="2.png" alt="speedometer">
-  
-  <p>ao clicar em "start" é iniciado uma nova corrida:</p>
+   <img src="2.png" width="300px" height="650px">
+  <img src="4.png" width="300px" height="650px">
 </div>
