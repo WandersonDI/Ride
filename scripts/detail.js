@@ -1,31 +1,13 @@
-const rideListElement = document.querySelector("#rideList");
-const allRides = getAllRides();
+const params = new URLSearchParams(window.location.search)
+const rideID = params.get("id")
+const ride = getRideRecord(rideID);
+console.log(ride)
+
+    document.addEventListener("DOMContentLoaded", async ()=>{
 
 
-allRides.forEach(async([id,value])=>{
-
-    const ride = JSON.parse(value)
-    ride.id = id
-    console.log(ride)
-
-    const itemElement = document.createElement("li");
-    itemElement.id = ride.id
-    itemElement.className = "d-flex p1 align-items-center gap-3"
-    rideListElement.appendChild(itemElement)
-
-    itemElement.addEventListener("click", ()=>{
-        window.location.href =  `../pages/detail.html?id=${ride.id}`
-    })
-
-    const firstPosition = ride.data[0]
-    const firstLocationData = await getLocationData(firstPosition.latitude, firstPosition.longitude)
-    
-    const mapID = `map${ride.id}`
-    const mapElement = document.createElement("div")
-    mapElement.id = mapID
-    mapElement.style = "width:120px;height:120px;"
-    mapElement.classList.add("bg-primary")
-    mapElement.classList.add("rounded-4")
+        const firstPosition = ride.data[0]
+      const firstLocationData = await getLocationData(firstPosition.latitude, firstPosition.longitude)
 
     const dataElement = document.createElement("div")
     dataElement.className = "flex-fill d-flex flex-column"
@@ -53,22 +35,33 @@ allRides.forEach(async([id,value])=>{
     dataElement.appendChild(distanceDiv)
     dataElement.appendChild(durationDiv)
     dataElement.appendChild(dateDiv)
-    itemElement.appendChild(mapElement)
-    itemElement.appendChild(dataElement)
+  
+    document.querySelector("#data").appendChild(dataElement)
     
-    const map =  L.map(mapID, {
-        zoomControl: false,
-        dragging: false,
-        attributionControl: false
+    const deleteButton = document.querySelector("#deleteBtn")
+    deleteButton.addEventListener("click", ()=>{
+        deleteRide(rideID)
+        window.location.href = "../"
     })
+
+    const map =  L.map("mapDetail")
 
     map.setView([firstPosition.latitude,firstPosition.longitude], 17)
     
     L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
 	maxZoom: 20,
-
+	attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map)
 
-    L.marker([firstPosition.latitude,firstPosition.longitude]).addTo(map)
-})
+    const positionArray = ride.data.map((position)=>{
+        return [ position.latitude, position.longitude]
+    })
 
+    const polyline = L.polyline(positionArray,{color:"#F00"});
+    polyline.addTo(map)
+
+    map.fitBounds(polyline.getBounds())
+
+    })
+
+    

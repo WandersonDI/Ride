@@ -22,6 +22,10 @@ function saveRideRecord(rideID, rideRecord){
     localStorage.setItem(rideID, JSON.stringify(rideRecord))
 }
 
+function deleteRide(rideID){
+    localStorage.removeItem(rideID)
+}
+
 function addPosition(rideID, position){
 
     const rideRecord = getRideRecord(rideID)
